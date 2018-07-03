@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    tools:ignore="RtlHardcoded">
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_flash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:checked="false"
+        android:text="@string/flash"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_flash"
+        android:checked="false"
+        android:text="@string/screen"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_cpu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_screen"
+        android:checked="false"
+        android:text="@string/tax_cpu"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_cpu"
+        android:checked="false"
+        android:text="@string/poll_gps"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_gps"
+        android:checked="false"
+        android:text="@string/poll_wifi"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_wifi"
+        android:checked="false"
+        android:text="@string/scan_bluetooth"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <TextView
+        android:id="@+id/tv_start"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="16dp"
+        android:padding="4dp"
+        android:gravity="center"
+        android:textSize="@dimen/start_button_text_size"
+        android:textColor="@android:color/white"
+        android:text="@string/start"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+</android.support.constraint.ConstraintLayout>
