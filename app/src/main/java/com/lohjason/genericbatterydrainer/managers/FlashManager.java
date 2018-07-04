@@ -3,7 +3,7 @@ package com.lohjason.genericbatterydrainer.managers;
 import android.app.Application;
 import android.content.Intent;
 
-import com.lohjason.genericbatterydrainer.FlashService;
+import com.lohjason.genericbatterydrainer.services.FlashService;
 import com.lohjason.genericbatterydrainer.utils.Logg;
 
 /**

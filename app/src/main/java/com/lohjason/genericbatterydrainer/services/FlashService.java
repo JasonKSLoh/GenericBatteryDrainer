@@ -1,4 +1,4 @@
-package com.lohjason.genericbatterydrainer;
+package com.lohjason.genericbatterydrainer.services;
 
 import android.app.Service;
 import android.content.Context;
