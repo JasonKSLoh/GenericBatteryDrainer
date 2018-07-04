@@ -1,4 +1,4 @@
-package com.lohjason.genericbatterydrainer;
+package com.lohjason.genericbatterydrainer.utils;
 
 import android.util.Log;
 

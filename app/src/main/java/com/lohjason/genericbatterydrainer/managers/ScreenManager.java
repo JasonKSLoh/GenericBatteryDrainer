@@ -6,7 +6,7 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
-import com.lohjason.genericbatterydrainer.Logg;
+import com.lohjason.genericbatterydrainer.utils.Logg;
 
 /**
  * ScreenManager

@@ -8,7 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
-import com.lohjason.genericbatterydrainer.Logg;
+import com.lohjason.genericbatterydrainer.utils.Logg;
 import com.lohjason.genericbatterydrainer.utils.PermissionUtils;
 
 /**

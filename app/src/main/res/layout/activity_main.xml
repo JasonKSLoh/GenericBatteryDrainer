@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".ui.MainActivity"
     tools:ignore="RtlHardcoded">
 
     <android.support.v7.widget.SwitchCompat
@@ -48,13 +48,26 @@
         />
 
     <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_gps"
+        android:id="@+id/switch_gpu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="32dp"
         android:layout_marginTop="16dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switch_cpu"
+        android:checked="false"
+        android:text="@string/tax_gpu"
+        android:textSize="@dimen/switch_text_size"
+        />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_gpu"
         android:checked="false"
         android:text="@string/poll_gps"
         android:textSize="@dimen/switch_text_size"

@@ -3,7 +3,7 @@ package com.lohjason.genericbatterydrainer.managers;
 import android.app.Application;
 import android.os.PowerManager;
 
-import com.lohjason.genericbatterydrainer.Logg;
+import com.lohjason.genericbatterydrainer.utils.Logg;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -11,13 +11,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -29,8 +26,6 @@ import static android.content.Context.POWER_SERVICE;
  * Created by jason on 2/7/18.
  */
 public class CpuManager {
-
-
     private static final String LOG_TAG = "+_CpuMgr";
     private static CpuManager instance;
     private PowerManager.WakeLock wakeLock = null;
@@ -50,7 +45,6 @@ public class CpuManager {
 
     private AtomicBoolean       isComputing         = new AtomicBoolean(false);
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private ExecutorService threadPoolExecutor;
 
     public static CpuManager getInstance() {
         if (instance == null) {
@@ -66,9 +60,6 @@ public class CpuManager {
             Logg.d(LOG_TAG, "Set CPU Computation On");
             compositeDisposable.clear();
             isComputing.set(true);
-            if (threadPoolExecutor == null || threadPoolExecutor.isShutdown()) {
-                threadPoolExecutor = Executors.newFixedThreadPool(getNumCores() * 4);
-            }
             List<Single<Boolean>> cpuObservables = getTaxCpuObservableList();
             for (Single<Boolean> single : cpuObservables) {
                 Disposable disposable = single.subscribe();
@@ -78,7 +69,6 @@ public class CpuManager {
             Logg.d(LOG_TAG, "Set CPU Computation Off");
             isComputing.set(false);
             compositeDisposable.clear();
-            threadPoolExecutor.shutdown();
         }
     }
 
@@ -87,30 +77,27 @@ public class CpuManager {
         int                   numCores       = getNumCores();
         List<Single<Boolean>> observableList = new ArrayList<>();
 
-        for (int i = 0; i < numCores * 2; i++) {
+        for (int i = 0; i < numCores; i++) {
             Single<Boolean> cpuSingle = Single.fromCallable(() -> {
-                boolean matches = false;
-//                String  initialText = "Initial Text";
-                StringBuilder sb = new StringBuilder();
-                for (int j = 0; j < 100; j++) {
+                boolean       matches = false;
+                StringBuilder sb      = new StringBuilder();
+                for (int j = 0; j < 10; j++) {
                     sb.append(new SimpleDateFormat("Y-YY-Y-M-M-d-d-H-H-m-m-s-s-S-S-S", Locale.getDefault()).format(new Date()));
                 }
                 String initialText = sb.toString();
+                String regex = regexPart2 + regexPart1 + regexPart2 + regexPart1;
+                Pattern pattern;
+                String textToMatch;
 
                 while (isComputing.get()) {
-//                    Logg.d(LOG_TAG, "Checking for match");
-                    String regex = regexPart2 + regexPart1 + regexPart2 + regexPart1;
-
-                    Pattern pattern     = Pattern.compile(regex);
-                    String  textToMatch = initialText + new SimpleDateFormat("Y-YY-Y-M-M-d-d-H-H-m-m-s-s-S-S-S", Locale.getDefault()).format(new Date());
+                    pattern     = Pattern.compile(regex);
+                    textToMatch = initialText + new SimpleDateFormat("Y-YY-Y-M-M-d-d-H-H-m-m-s-s-S-S-S", Locale.getDefault()).format(new Date());
                     matches = pattern.matcher(textToMatch).matches();
-//                    Logg.d(LOG_TAG, "Matched item");
                 }
                 return matches;
             })
-                    .subscribeOn(Schedulers.from(threadPoolExecutor))
-//                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread());
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(Schedulers.computation());
             observableList.add(cpuSingle);
         }
         return observableList;

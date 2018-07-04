@@ -14,8 +14,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.lohjason.genericbatterydrainer.BuildConfig;
-import com.lohjason.genericbatterydrainer.Logg;
-import com.lohjason.genericbatterydrainer.MainActivity;
+import com.lohjason.genericbatterydrainer.utils.Logg;
+import com.lohjason.genericbatterydrainer.ui.MainActivity;
 import com.lohjason.genericbatterydrainer.R;
 import com.lohjason.genericbatterydrainer.managers.DrainManager;
 
@@ -103,7 +103,7 @@ public class DrainForegroundService extends Service {
         NotificationChannel        notificationChannel = null;
         NotificationCompat.Builder notificationBuilder = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel = new NotificationChannel(ID_CHANNEL, "DefaultChannel", NotificationManager.IMPORTANCE_LOW);
+            notificationChannel = new NotificationChannel(ID_CHANNEL, "DefaultChannel", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             assert manager != null;
             manager.createNotificationChannel(notificationChannel);
@@ -138,12 +138,12 @@ public class DrainForegroundService extends Service {
         gpuOn       = intent.getBooleanExtra(KEY_GPU, false);
 
         DrainManager drainManager = DrainManager.getInstance(getApplication());
-        drainManager.startDraining(flashOn, screenOn, cpuOn, locationOn, wifiOn, bluetoothOn);
+        drainManager.startDraining(flashOn, screenOn, cpuOn, gpuOn, locationOn, wifiOn, bluetoothOn);
     }
 
     private void stopDraining(){
         DrainManager drainManager = DrainManager.getInstance(getApplication());
-        drainManager.stopDraining(flashOn, screenOn, cpuOn, locationOn, wifiOn, bluetoothOn);
+        drainManager.stopDraining(flashOn, screenOn, cpuOn, gpuOn, locationOn, wifiOn, bluetoothOn);
     }
 
     //To Start - e.g. in some other activity

@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v7.app.AppCompatActivity;
 
-import com.lohjason.genericbatterydrainer.Logg;
+import com.lohjason.genericbatterydrainer.utils.Logg;
+import com.lohjason.genericbatterydrainer.utils.PermissionUtils;
 
 /**
  * BluetoothScanManager
@@ -60,10 +62,12 @@ public class BluetoothScanManager {
         }
     }
 
-    public void enableBluetooth(){
-        if(hasBluetooth()){
-            BluetoothAdapter.getDefaultAdapter().enable();
-        }
+    public void enableBluetooth(AppCompatActivity activity){
+//        if(hasBluetooth()){
+//            BluetoothAdapter.getDefaultAdapter().enable();
+//        }
+        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        activity.startActivityForResult(intent, PermissionUtils.REQUEST_CODE_BLUETOOTH);
     }
 
     public boolean isBluetoothEnabled(){

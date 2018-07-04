@@ -2,6 +2,8 @@ package com.lohjason.genericbatterydrainer;
 
 import android.app.Application;
 
+import com.lohjason.genericbatterydrainer.utils.Logg;
+
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
+import com.lohjason.genericbatterydrainer.utils.Logg;
+
 import java.io.IOException;
 
 /**

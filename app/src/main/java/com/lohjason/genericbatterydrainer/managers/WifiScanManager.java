@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
-import com.lohjason.genericbatterydrainer.Logg;
+import com.lohjason.genericbatterydrainer.utils.Logg;
 
 /**
  * WifiScanManager
