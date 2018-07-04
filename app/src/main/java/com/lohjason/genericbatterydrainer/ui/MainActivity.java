@@ -1,8 +1,12 @@
 package com.lohjason.genericbatterydrainer.ui;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +19,7 @@ import com.lohjason.genericbatterydrainer.managers.BluetoothScanManager;
 import com.lohjason.genericbatterydrainer.managers.DrainManager;
 import com.lohjason.genericbatterydrainer.managers.WifiScanManager;
 import com.lohjason.genericbatterydrainer.services.DrainForegroundService;
+import com.lohjason.genericbatterydrainer.utils.Logg;
 import com.lohjason.genericbatterydrainer.utils.PermissionUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,15 +28,19 @@ import io.reactivex.disposables.Disposable;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "+_ManAtv";
-    private SwitchCompat switchFlash;
-    private SwitchCompat switchCpu;
-    private SwitchCompat switchGpu;
-    private SwitchCompat switchScreen;
-    private SwitchCompat switchGps;
-    private SwitchCompat switchWifi;
-    private SwitchCompat switchBluetooth;
-    private TextView     btnStart;
-    private Disposable   isDrainingDisposable;
+    private SwitchCompat      switchFlash;
+    private SwitchCompat      switchCpu;
+    private SwitchCompat      switchGpu;
+    private SwitchCompat      switchScreen;
+    private SwitchCompat      switchGps;
+    private SwitchCompat      switchWifi;
+    private SwitchCompat      switchBluetooth;
+    private TextView          btnStart;
+    private Disposable        isDrainingDisposable;
+    private TextView          tvBattLevel;
+    private TextView          tvBattVoltage;
+    private TextView          tvBattTemp;
+    private BroadcastReceiver batteryLevelReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         switchWifi = findViewById(R.id.switch_wifi);
         switchBluetooth = findViewById(R.id.switch_bluetooth);
         btnStart = findViewById(R.id.tv_start);
+        tvBattLevel = findViewById(R.id.tv_battery_percentage);
+        tvBattTemp = findViewById(R.id.tv_battery_temp);
+        tvBattVoltage = findViewById(R.id.tv_battery_voltage);
 
         switchFlash.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -138,6 +150,36 @@ public class MainActivity extends AppCompatActivity {
                     }
                     setStartDrainingButtonState(b);
                 });
+    }
+
+    private void setupBatteryLevelReceiver() {
+        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        batteryLevelReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Logg.d(LOG_TAG, "Got battery event");
+                int level           = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale           = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                int milliVolts      = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
+                int tempDeciCelcius = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+
+                float temp         = (float) tempDeciCelcius / 10f;
+                float voltage      = (float) milliVolts / 1000f;
+                float batteryLevel = level / (float) scale;
+
+                String tempString = temp + "°C";
+                String voltageString = voltage + "V";
+                String levelString = batteryLevel * 100 + "%";
+
+
+                tvBattTemp.setText(tempString);
+                tvBattVoltage.setText(voltageString);
+                tvBattLevel.setText(levelString);
+            }
+        };
+
+        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+
     }
 
     private void setStartDrainingButtonState(boolean isNowDraining) {
@@ -313,9 +355,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupBatteryLevelReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(batteryLevelReceiver != null){
+            unregisterReceiver(batteryLevelReceiver);
+        }
+    }
+
     @Override
     protected void onDestroy() {
-        if(isDrainingDisposable != null){
+        if (isDrainingDisposable != null) {
             isDrainingDisposable.dispose();
             isDrainingDisposable = null;
         }

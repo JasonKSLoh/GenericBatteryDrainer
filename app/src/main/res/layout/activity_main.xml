@@ -8,96 +8,470 @@
     tools:context=".ui.MainActivity"
     tools:ignore="RtlHardcoded">
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_flash"
-        android:layout_width="wrap_content"
+    <!--region Battery Status Display-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_battery_info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:checked="false"
-        android:text="@string/flash"
-        android:textSize="@dimen/switch_text_size"
-        />
-
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_flash"
-        android:checked="false"
-        android:text="@string/screen"
-        android:textSize="@dimen/switch_text_size"
-        />
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        >
+        <!--region Guidelines-->
+        <android.support.constraint.Guideline
+            android:id="@+id/gl33"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.33"
+            android:orientation="vertical"
+            />
+        <android.support.constraint.Guideline
+            android:id="@+id/gl66"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.66"
+            android:orientation="vertical"
+            />
+        <!--endregion-->
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_cpu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_screen"
-        android:checked="false"
-        android:text="@string/tax_cpu"
-        android:textSize="@dimen/switch_text_size"
-        />
+        <!--region Battery Percentage-->
+        <TextView
+            android:id="@+id/tv_battery_percentage_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl33"
+            android:textStyle="bold"
+            android:text="@string/level_label"
+            />
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_gpu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_cpu"
-        android:checked="false"
-        android:text="@string/tax_gpu"
-        android:textSize="@dimen/switch_text_size"
-        />
+        <TextView
+            android:id="@+id/tv_battery_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_battery_percentage_label"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl33"
+            android:text="@string/updating"
+            />
+        <!--endregion-->
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_gps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_gpu"
-        android:checked="false"
-        android:text="@string/poll_gps"
-        android:textSize="@dimen/switch_text_size"
-        />
+        <!--region Battery Temp-->
+        <TextView
+            android:id="@+id/tv_battery_temp_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/gl33"
+            app:layout_constraintRight_toLeftOf="@id/gl66"
+            android:textStyle="bold"
+            android:text="@string/temperature_label"
+            />
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_wifi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_gps"
-        android:checked="false"
-        android:text="@string/poll_wifi"
-        android:textSize="@dimen/switch_text_size"
-        />
+        <TextView
+            android:id="@+id/tv_battery_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_battery_temp_label"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/gl33"
+            app:layout_constraintRight_toLeftOf="@id/gl66"
+            android:text="@string/updating"
+            />
+        <!--endregion-->
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switch_bluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
+        <!--region Battery Voltage-->
+        <TextView
+            android:id="@+id/tv_battery_voltage_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/gl66"
+            app:layout_constraintRight_toRightOf="parent"
+            android:textStyle="bold"
+            android:text="@string/voltage_label"
+            />
+
+        <TextView
+            android:id="@+id/tv_battery_voltage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_battery_voltage_label"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/gl66"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/updating"
+            />
+        <!--endregion-->
+
+    </android.support.constraint.ConstraintLayout>
+    <!--endregion-->
+
+    <ScrollView
+        android:id="@+id/scrollContainer_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/container_battery_info"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_wifi"
-        android:checked="false"
-        android:text="@string/scan_bluetooth"
-        android:textSize="@dimen/switch_text_size"
-        />
+        app:layout_constraintBottom_toTopOf="@id/tv_start"
+        android:layout_marginBottom="8dp"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        >
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <!--region Flash-->
+            <TextView
+                android:id="@+id/tv_title_flash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/flash"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_flash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_flash"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Turns on the Torch"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_flash"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_flash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_flash"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_flash"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region Screen-->
+
+            <TextView
+                android:id="@+id/tv_title_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_flash"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/screen"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_screen"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Keeps screen on at Full Brightness"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_screen"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_screen"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_screen"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region CPU-->
+
+            <TextView
+                android:id="@+id/tv_title_cpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_screen"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/tax_cpu"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_cpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_cpu"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Performs heavy CPU calculations"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_cpu"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_cpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_cpu"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_cpu"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region GPU-->
+
+            <TextView
+                android:id="@+id/tv_title_gpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_cpu"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/tax_gpu"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_gpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_gpu"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Does calculations on GPU(May use CPU)"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_gpu"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_gpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_gpu"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_gpu"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region GPS-->
+
+            <TextView
+                android:id="@+id/tv_title_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_gpu"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/poll_gps"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_gps"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Continuously makes GPS requests"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_gps"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_gps"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_gps"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region WiFi-->
+
+            <TextView
+                android:id="@+id/tv_title_wifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_gps"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/poll_wifi"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_wifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_wifi"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Continuously performs Wifi scans"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_wifi"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_wifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_wifi"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_wifi"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+            <!--region Bluetooth-->
+
+            <TextView
+                android:id="@+id/tv_title_bluetooth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_wifi"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textStyle="bold"
+                android:textSize="@dimen/switch_title_text_size"
+                android:text="@string/scan_bluetooth"
+                />
+
+            <TextView
+                android:id="@+id/tv_subtitle_bluetooth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_sublabel_top"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_bluetooth"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="@dimen/switch_subtitle_text_size"
+                android:text="Continuously initiates Bluetooth scans"
+                />
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/margin_label_side"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle_bluetooth"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_bluetooth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/switch_button_side"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_title_bluetooth"
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle_bluetooth"
+                android:checked="false"
+                />
+            <!--endregion-->
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/tv_start"

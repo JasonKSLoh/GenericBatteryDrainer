@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="switch_text_size">20sp</dimen>
+    <dimen name="switch_button_side">14dp</dimen>
+    <dimen name="switch_title_text_size">18sp</dimen>
+    <dimen name="switch_subtitle_text_size">14sp</dimen>
+    <dimen name="margin_label_top">12dp</dimen>
     <dimen name="start_button_text_size">24sp</dimen>
+    <dimen name="margin_label_side">16dp</dimen>
+    <dimen name="margin_sublabel_top">2dp</dimen>
 </resources>

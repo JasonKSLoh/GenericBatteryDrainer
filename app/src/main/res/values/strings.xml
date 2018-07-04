@@ -1,16 +1,18 @@
 <resources>
     <string name="app_name">Generic Battery Drainer</string>
     <string name="flash">Flash</string>
-    <string name="screen">Max Screen Brightness</string>
-    <string name="tax_cpu">Tax CPU</string>
+    <string name="screen">Screen Wake Lock</string>
+    <string name="tax_cpu">CPU Computations</string>
+    <string name="tax_gpu">GPU Computations</string>
+    <string name="poll_gps">GPS</string>
+    <string name="poll_wifi">WiFi</string>
+    <string name="scan_bluetooth">Bluetooth</string>
     <string name="start">Start</string>
     <string name="not_now">Not Now</string>
     <string name="ok">OK</string>
     <string name="notification_title">Generic Battery Drainer is running</string>
     <string name="notification_message1">Press Stop to stop draining</string>
     <string name="stop">Stop</string>
-    <string name="poll_gps">Poll GPS</string>
-    <string name="poll_wifi">Poll WiFi</string>
     <string name="camera_permission_title">Camera</string>
     <string name="camera_permission_message">The Camera Permission is needed in order to turn on the flashlight.\n- You can still use this app without granting this permission,but you will not be able to turn on the flashlight.</string>
     <string name="write_settings_permission_title">Modify System Settings</string>
@@ -19,8 +21,10 @@
     <string name="access_fine_location_permission_message">- The Access Fine Location Permission is needed in order to make GPS requests.\n- Your location data is not used, collected, saved or shared.\n- It is only invoked to make GPS requests to drain the battery.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making GPS requests.\n- Would you like to grant this permission?</string>
     <string name="wifi_on_title">Turn Wifi On</string>
     <string name="wifi_on_message">- Wifi needs to be on to perform repeated Wifi scans.\n- Your wifi scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Wifi scans.\n- Would you like to turn Wifi on?</string>
-    <string name="scan_bluetooth">Scan Bluetooth</string>
-    <string name="tax_gpu">Tax GPU</string>
     <string name="bluetooth_on_title">Bluetooth</string>
     <string name="bluetooth_on_message">- Bluetooth needs to be enabled to perform Bluetooth Scans.\n- Your Bluetooth scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Bluetooth scans.\n- Would you like to turn Bluetooth on?</string>
+    <string name="updating">Updating</string>
+    <string name="voltage_label">Voltage</string>
+    <string name="temperature_label">Temperature</string>
+    <string name="level_label">Level</string>
 </resources>
