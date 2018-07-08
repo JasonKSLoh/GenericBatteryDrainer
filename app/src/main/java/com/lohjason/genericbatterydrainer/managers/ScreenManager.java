@@ -3,8 +3,6 @@ package com.lohjason.genericbatterydrainer.managers;
 import android.app.Application;
 import android.content.ContentResolver;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
-import android.view.WindowManager;
 
 import com.lohjason.genericbatterydrainer.utils.Logg;
 
@@ -21,7 +19,7 @@ public class ScreenManager {
 
     private int originalBrightness = -1;
     private int originalTimeout = -1;
-    private boolean brightnessWasAutomatic = false;
+    private Boolean brightnessWasAutomatic;
 
 
     public static ScreenManager getInstance(){
@@ -31,14 +29,14 @@ public class ScreenManager {
         return instance;
     }
 
-    public void keepScreenOn(AppCompatActivity activity, boolean keepOn){
-        Logg.d(LOG_TAG, "Keep screen on? " + keepOn);
-        if(keepOn){
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        } else {
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-    }
+//    public void keepScreenOn(AppCompatActivity activity, boolean keepOn){
+//        Logg.d(LOG_TAG, "Keep screen on? " + keepOn);
+//        if(keepOn){
+//            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        } else {
+//            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        }
+//    }
 
     public void setScreenTimeoutToMax(Application application, boolean setMax){
         ContentResolver contentResolver = application.getContentResolver();
@@ -69,7 +67,9 @@ public class ScreenManager {
 
     public void setBrightnessToMax(Application application, boolean setMax){
         ContentResolver contentResolver = application.getContentResolver();
-        brightnessWasAutomatic = wasBrightnessAutomatic(application);
+        if(brightnessWasAutomatic == null){
+            brightnessWasAutomatic = wasBrightnessAutomatic(application);
+        }
         Settings.System.putInt(
                 contentResolver,
                 Settings.System.SCREEN_BRIGHTNESS_MODE,
@@ -91,19 +91,21 @@ public class ScreenManager {
             Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, MAX_BRIGHTNESS);
             Logg.d(LOG_TAG, "Set brightness to max");
         } else {
-            if(originalBrightness < 0){
-                return;
+            if(brightnessWasAutomatic){
+                Settings.System.putInt(
+                        contentResolver,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
             }
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, originalBrightness);
+            if(originalBrightness > 0){
+                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, originalBrightness);
+            }
+
             Logg.d(LOG_TAG, "Set brightness to " + originalBrightness);
         }
     }
     private boolean wasBrightnessAutomatic(Application application){
         ContentResolver contentResolver = application.getContentResolver();
-        Settings.System.putInt(
-                contentResolver,
-                Settings.System.SCREEN_BRIGHTNESS_MODE,
-                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
         int wasAutomatic;
         try {
             wasAutomatic =

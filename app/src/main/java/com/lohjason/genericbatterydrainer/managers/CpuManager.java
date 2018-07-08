@@ -1,5 +1,6 @@
 package com.lohjason.genericbatterydrainer.managers;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.PowerManager;
 
@@ -106,6 +107,7 @@ public class CpuManager {
         }
     }
 
+    @SuppressLint("WakelockTimeout")
     public void setWakelockOn(Application application, boolean wakelockOn) {
         Logg.d(LOG_TAG, "Set wakelock? " + wakelockOn);
         if (wakelockOn) {

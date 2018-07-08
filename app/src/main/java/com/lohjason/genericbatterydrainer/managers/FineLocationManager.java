@@ -37,7 +37,7 @@ public class FineLocationManager implements LocationListener {
             Logg.d(LOG_TAG, "Location manager was null?:" + (locationManager == null) + " Or location was not available");
             return;
         }
-        if (setOn) {
+        if (setOn && PermissionUtils.hasLocationPermission(application)) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1500, 0, this);
             Logg.d(LOG_TAG, "Started requesting GPS updates");
         } else {

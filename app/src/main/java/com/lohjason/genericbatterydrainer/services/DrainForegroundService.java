@@ -16,12 +16,14 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import com.lohjason.genericbatterydrainer.BuildConfig;
 import com.lohjason.genericbatterydrainer.R;
 import com.lohjason.genericbatterydrainer.managers.DrainManager;
 import com.lohjason.genericbatterydrainer.ui.MainActivity;
 import com.lohjason.genericbatterydrainer.utils.Logg;
+import com.lohjason.genericbatterydrainer.utils.SharedPrefsUtils;
 
 import java.util.Locale;
 
@@ -56,16 +58,9 @@ public class DrainForegroundService extends Service {
     private boolean gpuOn       = false;
     private boolean wifiOn      = false;
 
-    Intent                     notificationIntent;
-    PendingIntent              pendingIntent;
-    Intent                     stopIntent;
-    PendingIntent              pendingStopIntent;
-    Bitmap                     icon;
-    Bitmap                     emptyBitmap;
-    NotificationChannel        notificationChannel;
-    NotificationCompat.Builder notificationBuilder;
-    BroadcastReceiver          batteryLevelReceiver;
-    Float originalBatteryLevel = null;
+    private NotificationCompat.Builder notificationBuilder;
+    private BroadcastReceiver          batteryLevelReceiver;
+    private Float originalBatteryLevel = null;
 
     @Nullable
     @Override
@@ -105,23 +100,23 @@ public class DrainForegroundService extends Service {
 
     private void setupNotification() {
         Logg.d(LOG_TAG, "Got Start Foreground Intent");
-        notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
 
         notificationIntent.setAction(ACTION_ACTIVITY);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        stopIntent = new Intent(this, DrainForegroundService.class);
+        Intent stopIntent = new Intent(this, DrainForegroundService.class);
         stopIntent.setAction(ACTION_STOP);
-        pendingStopIntent = PendingIntent.getService(this, 0, stopIntent, 0);
+        PendingIntent pendingStopIntent = PendingIntent.getService(this, 0, stopIntent, 0);
 
-        icon = BitmapFactory.decodeResource(getApplication().getResources(), R.drawable.ic_battery_alert_2);
-        emptyBitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
+        Bitmap icon = BitmapFactory.decodeResource(getApplication().getResources(), R.drawable.ic_battery_alert_2);
+        Bitmap emptyBitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
         Logg.d(LOG_TAG, "icon null?: " + (icon == null));
         if (icon == null) {
             icon = emptyBitmap;
         }
-        notificationChannel = null;
+        NotificationChannel notificationChannel = null;
         notificationBuilder = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(ID_CHANNEL, "DefaultChannel", NotificationManager.IMPORTANCE_DEFAULT);
@@ -175,13 +170,29 @@ public class DrainForegroundService extends Service {
                 int scale           = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
                 float batteryLevel = level / (float) scale;
 
+                int temperatureRaw = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+                int temperature = temperatureRaw / 10;
+
+                boolean tempLimitReached = temperature > SharedPrefsUtils.getTempLimit(context);
+                boolean levelLimitReached = batteryLevel * 100 <= SharedPrefsUtils.getLevelLimit(context);
+                if( tempLimitReached || levelLimitReached){
+                    Intent stopIntent = new Intent(context, DrainForegroundService.class);
+                    stopIntent.setAction(DrainForegroundService.ACTION_STOP);
+                    String stoppedMessage = "Battery Drainer Stopped: Target Battery Level Reached.";
+                    if(tempLimitReached){
+                        stoppedMessage = "Battery Drainer Stopped: Temperature limit Reached.";
+                    }
+                    Toast.makeText(context, stoppedMessage, Toast.LENGTH_SHORT).show();
+                    startService(stopIntent);
+                    return;
+                }
+
                 if(originalBatteryLevel == null){
                     originalBatteryLevel = batteryLevel;
                     updateNotification(0);
                 } else {
                     updateNotification(originalBatteryLevel - batteryLevel);
                 }
-
             }
         };
         registerReceiver(batteryLevelReceiver, batteryLevelFilter);

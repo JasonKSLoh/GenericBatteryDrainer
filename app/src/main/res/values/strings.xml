@@ -28,4 +28,5 @@
     <string name="temperature_label">Battery Temp</string>
     <string name="level_label">Battery Level</string>
     <string name="about_app_button">About app button</string>
+    <string name="cd_settings_button">Settings Button</string>
 </resources>
