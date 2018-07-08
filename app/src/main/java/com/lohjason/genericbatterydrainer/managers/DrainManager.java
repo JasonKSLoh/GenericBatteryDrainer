@@ -51,7 +51,7 @@ public class DrainManager {
         return drainBehaviorSubject;
     }
 
-    private void setIsDrainingOn(boolean setOn){
+    private void setIsDrainingOn(boolean setOn) {
         isDraining.set(setOn);
         drainBehaviorSubject.onNext(setOn);
     }
@@ -79,7 +79,8 @@ public class DrainManager {
             cpuManager.setComputationOn(true);
         }
         if (useGpu) {
-            renderscriptManager.setRenderingOn(application, true);
+//            renderscriptManager.setRenderingOn(application, true);
+            renderscriptManager.setMatMulOn(application, true);
         }
         if (useCpu || useGpu) {
             cpuManager.setWakelockOn(application, true);
@@ -113,7 +114,8 @@ public class DrainManager {
             cpuManager.setComputationOn(false);
         }
         if (useGpu) {
-            renderscriptManager.setRenderingOn(application, false);
+//            renderscriptManager.setRenderingOn(application, false);
+            renderscriptManager.setMatMulOn(application, false);
         }
         if (useCpu || useGpu) {
             cpuManager.setWakelockOn(application, false);

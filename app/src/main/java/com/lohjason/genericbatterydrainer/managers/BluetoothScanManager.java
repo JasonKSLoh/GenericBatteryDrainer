@@ -16,7 +16,6 @@ import com.lohjason.genericbatterydrainer.utils.PermissionUtils;
  * Created by jason on 3/7/18.
  */
 public class BluetoothScanManager {
-
     private static final String LOG_TAG = "+_BthMgr";
     private static BluetoothScanManager instance;
     private BroadcastReceiver           bluetoothReceiver;

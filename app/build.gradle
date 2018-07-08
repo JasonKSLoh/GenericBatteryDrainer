@@ -10,7 +10,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        renderscriptTargetApi 27
+        renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
     }
     buildTypes {

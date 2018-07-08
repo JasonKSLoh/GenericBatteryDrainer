@@ -25,6 +25,7 @@
     <string name="bluetooth_on_message">- Bluetooth needs to be enabled to perform Bluetooth Scans.\n- Your Bluetooth scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Bluetooth scans.\n- Would you like to turn Bluetooth on?</string>
     <string name="updating">Updating</string>
     <string name="voltage_label">Voltage</string>
-    <string name="temperature_label">Temperature</string>
-    <string name="level_label">Level</string>
+    <string name="temperature_label">Battery Temp</string>
+    <string name="level_label">Battery Level</string>
+    <string name="about_app_button">About app button</string>
 </resources>

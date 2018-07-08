@@ -46,6 +46,7 @@ public class FineLocationManager implements LocationListener {
         }
     }
 
+
     private boolean isLocationAvailable(Application application) {
         boolean locationEnabled = false;
         if (!PermissionUtils.hasLocationPermission(application)) {

@@ -1,7 +1,6 @@
 package com.lohjason.genericbatterydrainer.managers;
 
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
@@ -9,6 +8,7 @@ import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.support.v8.renderscript.Type;
 
+import com.lohjason.genericbatterydrainer.ScriptC_matmul;
 import com.lohjason.genericbatterydrainer.utils.Logg;
 
 import java.nio.ByteBuffer;
@@ -30,6 +30,7 @@ public class RenderscriptManager {
     private static RenderscriptManager instance;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private AtomicBoolean       isComputing         = new AtomicBoolean(false);
+    private Thread thread;
 
     public static RenderscriptManager getInstance() {
         if (instance == null) {
@@ -59,22 +60,19 @@ public class RenderscriptManager {
             }
             isComputing.set(true);
             Disposable disposable = Single.fromCallable(() -> {
-                RenderScript renderScript = RenderScript.create(application);
-                Bitmap       bitmap       = generateRandomBitmap(1000, 1000);
-                Allocation allocation = Allocation.createFromBitmap(renderScript, bitmap);
+                RenderScript        renderScript   = RenderScript.create(application);
+                Bitmap              bitmap         = generateRandomBitmap(1000, 1000);
+                Allocation          allocation     = Allocation.createFromBitmap(renderScript, bitmap);
                 Type                type           = allocation.getType();
                 Allocation          blurAllocation = Allocation.createTyped(renderScript, type);
                 ScriptIntrinsicBlur blurScript     = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
-                Bitmap              blankBitmap    = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888);
                 blurScript.setRadius(25f);
                 blurScript.setInput(allocation);
                 while (isComputing.get()) {
-                    for(int i = 0; i < 10; i++){
+                    for (int i = 0; i < 5; i++) {
                         blurScript.forEach(blurAllocation);
                     }
-//                    blurAllocation.copyTo(blankBitmap);
                     renderScript.finish();
-//                    Logg.d(LOG_TAG, "Render round done");
                 }
                 allocation.destroy();
                 blurAllocation.destroy();
@@ -82,6 +80,7 @@ public class RenderscriptManager {
                 type.destroy();
                 renderScript.destroy();
                 Logg.d(LOG_TAG, "Renderscript destroyed");
+                Runtime.getRuntime().gc();
                 return true;
             })
                     .subscribeOn(Schedulers.newThread())
@@ -95,25 +94,76 @@ public class RenderscriptManager {
         }
     }
 
-    private static Bitmap blurBitmap(Context context, Bitmap bitmap, float radius) {
-        RenderScript renderScript   = RenderScript.create(context);
-        Allocation   allocation     = Allocation.createFromBitmap(renderScript, bitmap);
-        Type         type           = allocation.getType();
-        Allocation   blurAllocation = Allocation.createTyped(renderScript, type);
 
-        ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
-        blurScript.setRadius(radius);
-        blurScript.setInput(allocation);
-        blurScript.forEach(blurAllocation);
+    public void setMatMulOn(Application context, boolean setOn) {
+        if(setOn){
+            if(isComputing.get()){
+                return;
+            }
+            isComputing.set(true);
+            thread = new Thread( () -> {
+                RenderScript renderScript = RenderScript.create(context);
+                int          matrixWidth  = 400;
+                int          matrixSize   = matrixWidth * matrixWidth;
+                float[]      matrixA      = new float[matrixSize];
+                float[]      matrixB      = new float[matrixSize];
+                int[]        posRow       = new int[matrixWidth];
+                int[]        nSize        = new int[1];
+                int[]        kSize        = new int[1];
+                Random       random       = new Random();
 
-        blurAllocation.copyTo(bitmap);
-        allocation.destroy();
-        blurAllocation.destroy();
-        blurScript.destroy();
-        type.destroy();
-        renderScript.destroy();
-        return bitmap;
+                for (int i = 0; i < matrixSize; i++) {
+                    matrixA[i] = random.nextFloat();
+                    matrixB[i] = random.nextFloat();
+                }
+                for (int i = 0; i < matrixWidth; i++) {
+                    posRow[i] = i;
+                }
+                nSize[0] = matrixWidth;
+                kSize[0] = matrixWidth;
+
+                Allocation allocationA = Allocation.createSized(renderScript, Element.F32(renderScript), matrixSize);
+                Allocation allocationB = Allocation.createSized(renderScript, Element.F32(renderScript), matrixSize);
+                Allocation allocationC = Allocation.createSized(renderScript, Element.F32(renderScript), matrixSize);
+
+                Allocation allocationNSize  = Allocation.createSized(renderScript, Element.I32(renderScript), 1);
+                Allocation allocationKSize  = Allocation.createSized(renderScript, Element.I32(renderScript), 1);
+                Allocation allocationPosRow = Allocation.createSized(renderScript, Element.I32(renderScript), matrixWidth);
+
+                allocationA.copyFrom(matrixA);
+                allocationB.copyFrom(matrixB);
+                allocationPosRow.copyFrom(posRow);
+                allocationNSize.copyFrom(nSize);
+                allocationKSize.copyFrom(kSize);
+
+                ScriptC_matmul script = new ScriptC_matmul(renderScript);
+                script.bind_matA(allocationA);
+                script.bind_matB(allocationB);
+                script.bind_outMatrix(allocationC);
+                script.bind_nSize(allocationNSize);
+                script.bind_kSize(allocationKSize);
+
+                while (isComputing.get()) {
+                    script.forEach_root(allocationPosRow, allocationPosRow);
+                    renderScript.finish();
+                }
+
+                allocationA.destroy();
+                allocationB.destroy();
+                allocationC.destroy();
+                allocationNSize.destroy();
+                allocationKSize.destroy();
+                allocationPosRow.destroy();
+                script.destroy();
+                renderScript.destroy();
+                Logg.d(LOG_TAG, "Renderscript destroyed");
+                Runtime.getRuntime().gc();
+            });
+            thread.start();
+
+        } else {
+            isComputing.set(false);
+            Logg.d(LOG_TAG, "Stopped Matmul");
+        }
     }
-
-
 }

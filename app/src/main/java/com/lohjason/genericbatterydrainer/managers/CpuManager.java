@@ -6,11 +6,9 @@ import android.os.PowerManager;
 import com.lohjason.genericbatterydrainer.utils.Logg;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
@@ -29,16 +27,6 @@ public class CpuManager {
     private static final String LOG_TAG = "+_CpuMgr";
     private static CpuManager instance;
     private PowerManager.WakeLock wakeLock = null;
-
-    private static final String regexPart1 = "^(-9223372036854775808|0)$|^((-?)((?!0)\\d{1,18}|[1-8]"
-                                             + "\\d{18}|9[0-1]\\d{17}|92[0-1]\\d{16}|922[0-2]\\d{15}"
-                                             + "|9223[0-2]\\d{14}|92233[0-6]\\d{13}|922337[0-1]\\d{12}"
-                                             + "|92233720[0-2]\\d{10}|922337203[0-5]\\d{9}|9223372036[0-7]"
-                                             + "\\d{8}|92233720368[0-4]\\d{7}|922337203685[0-3]\\d{6}"
-                                             + "|9223372036854[0-6]\\d{5}|92233720368547[0-6]\\d{4}"
-                                             + "|922337203685477[0-4]\\d{3}|9223372036854775[0-7]"
-                                             + "\\d{2}|922337203685477580[0-7]))$";
-    private static final String regexPart2 = "([\\w\\s]+)([+\\-/*]+)([\\w\\s]+)([+\\-/*]+)([\\w\\s]+)";
 
     private CpuManager() {
     }
@@ -72,29 +60,23 @@ public class CpuManager {
         }
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
     private List<Single<Boolean>> getTaxCpuObservableList() {
         int                   numCores       = getNumCores();
         List<Single<Boolean>> observableList = new ArrayList<>();
 
         for (int i = 0; i < numCores; i++) {
             Single<Boolean> cpuSingle = Single.fromCallable(() -> {
-                boolean       matches = false;
-                StringBuilder sb      = new StringBuilder();
-                for (int j = 0; j < 10; j++) {
-                    sb.append(new SimpleDateFormat("Y-YY-Y-M-M-d-d-H-H-m-m-s-s-S-S-S", Locale.getDefault()).format(new Date()));
-                }
-                String initialText = sb.toString();
-                String regex = regexPart2 + regexPart1 + regexPart2 + regexPart1;
-                Pattern pattern;
-                String textToMatch;
-
+                int newInt = 0;
+                float newFloat = 0;
+                double newDouble = 0;
+                Random random = new Random();
                 while (isComputing.get()) {
-                    pattern     = Pattern.compile(regex);
-                    textToMatch = initialText + new SimpleDateFormat("Y-YY-Y-M-M-d-d-H-H-m-m-s-s-S-S-S", Locale.getDefault()).format(new Date());
-                    matches = pattern.matcher(textToMatch).matches();
+                    newInt = random.nextInt() * random.nextInt() / random.nextInt() / random.nextInt() ^ random.nextInt();
+                    newFloat = random.nextFloat() * random.nextFloat() / random.nextFloat() * random.nextFloat();
+                    newDouble = Math.pow(Math.sqrt(random.nextDouble()), Math.sqrt(random.nextDouble()));
                 }
-                return matches;
+                Runtime.getRuntime().gc();
+                return (newDouble - newFloat) > newInt;
             })
                     .subscribeOn(Schedulers.computation())
                     .observeOn(Schedulers.computation());
