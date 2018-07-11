@@ -97,7 +97,6 @@ public class DrainForegroundService extends Service {
         super.onDestroy();
     }
 
-
     private void setupNotification() {
         Logg.d(LOG_TAG, "Got Start Foreground Intent");
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -173,12 +172,15 @@ public class DrainForegroundService extends Service {
                 int temperatureRaw = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
                 int temperature = temperatureRaw / 10;
 
-                boolean tempLimitReached = temperature > SharedPrefsUtils.getTempLimit(context);
-                boolean levelLimitReached = batteryLevel * 100 <= SharedPrefsUtils.getLevelLimit(context);
+                int levelLimit = SharedPrefsUtils.getLevelLimit(context);
+                int tempLimit = SharedPrefsUtils.getTempLimit(context);
+
+                boolean tempLimitReached = temperature > tempLimit;
+                boolean levelLimitReached = batteryLevel * 100 <= levelLimit;
                 if( tempLimitReached || levelLimitReached){
                     Intent stopIntent = new Intent(context, DrainForegroundService.class);
                     stopIntent.setAction(DrainForegroundService.ACTION_STOP);
-                    String stoppedMessage = "Battery Drainer Stopped: Target Battery Level Reached.";
+                    String stoppedMessage = "Battery Drainer Stopped: Target Battery Level: " + levelLimit + "% Reached.";
                     if(tempLimitReached){
                         stoppedMessage = "Battery Drainer Stopped: Temperature limit Reached.";
                     }

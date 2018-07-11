@@ -38,7 +38,7 @@ public class FineLocationManager implements LocationListener {
             return;
         }
         if (setOn && PermissionUtils.hasLocationPermission(application)) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1500, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1200, 0, this);
             Logg.d(LOG_TAG, "Started requesting GPS updates");
         } else {
             locationManager.removeUpdates(this);
@@ -56,13 +56,14 @@ public class FineLocationManager implements LocationListener {
         if (manager == null) {
             return false;
         }
-        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             Logg.d(LOG_TAG, "GPS is enabled for use");
             locationEnabled = true;
         }
         return locationEnabled;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onLocationChanged(Location location) {
         Logg.d(LOG_TAG, "Got location: " + location.toString());

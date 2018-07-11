@@ -15,11 +15,15 @@ public class ScreenManager {
     private static final String LOG_TAG = "+_ScnMgr";
     private static final int MAX_BRIGHTNESS = 255;
     private static final int MAX_SCREEN_TIMEOUT = Integer.MAX_VALUE;
+    private static final int DEFAULT_TIMEOUT = 60000;
     private static ScreenManager instance = null;
 
     private int originalBrightness = -1;
-    private int originalTimeout = -1;
+    private int originalTimeout = DEFAULT_TIMEOUT;
     private Boolean brightnessWasAutomatic;
+
+    private boolean isMaxBrightnessOn = false;
+    private boolean isMaxScreenTimeoutOn = false;
 
 
     public static ScreenManager getInstance(){
@@ -39,6 +43,9 @@ public class ScreenManager {
 //    }
 
     public void setScreenTimeoutToMax(Application application, boolean setMax){
+        if(isMaxScreenTimeoutOn == setMax){
+            return;
+        }
         ContentResolver contentResolver = application.getContentResolver();
         if(setMax){
             try {
@@ -51,23 +58,22 @@ public class ScreenManager {
                 originalTimeout = 60000;
             }
 
-            if(originalTimeout == MAX_SCREEN_TIMEOUT){
-                return;
-            }
             Settings.System.putInt(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, MAX_SCREEN_TIMEOUT);
             Logg.d(LOG_TAG, "Set screen timeout to max");
+            isMaxScreenTimeoutOn = true;
         } else {
-            if(originalTimeout < 0){
-                return;
-            }
             Settings.System.putInt(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, originalTimeout);
             Logg.d(LOG_TAG, "Set timeout to " + originalTimeout);
+            isMaxScreenTimeoutOn = false;
         }
     }
 
     public void setBrightnessToMax(Application application, boolean setMax){
+        if(setMax == isMaxBrightnessOn){
+            return;
+        }
         ContentResolver contentResolver = application.getContentResolver();
-        if(brightnessWasAutomatic == null){
+        if(!isMaxBrightnessOn){
             brightnessWasAutomatic = wasBrightnessAutomatic(application);
         }
         Settings.System.putInt(
@@ -82,37 +88,38 @@ public class ScreenManager {
                                 contentResolver,
                                 Settings.System.SCREEN_BRIGHTNESS);
             } catch (Settings.SettingNotFoundException e) {
+                originalBrightness = MAX_BRIGHTNESS / 2;
                 Logg.d(LOG_TAG, "Screen brightness not found");
             }
 
-            if(originalBrightness == MAX_BRIGHTNESS){
-                return;
-            }
             Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, MAX_BRIGHTNESS);
+            isMaxBrightnessOn = true;
             Logg.d(LOG_TAG, "Set brightness to max");
         } else {
+            if(originalBrightness > 0){
+                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, originalBrightness);
+            }
             if(brightnessWasAutomatic){
                 Settings.System.putInt(
                         contentResolver,
                         Settings.System.SCREEN_BRIGHTNESS_MODE,
                         Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
             }
-            if(originalBrightness > 0){
-                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, originalBrightness);
-            }
-
+            isMaxBrightnessOn = false;
             Logg.d(LOG_TAG, "Set brightness to " + originalBrightness);
         }
     }
     private boolean wasBrightnessAutomatic(Application application){
         ContentResolver contentResolver = application.getContentResolver();
-        int wasAutomatic;
+        int brightnessMode;
         try {
-            wasAutomatic =
+            brightnessMode =
                     Settings.System.getInt(
                             contentResolver,
                             Settings.System.SCREEN_BRIGHTNESS_MODE);
-            return wasAutomatic == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+            boolean wasAutomatic = brightnessMode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+            Logg.d(LOG_TAG, "Screen brightness mode was : " + wasAutomatic);
+            return wasAutomatic;
         } catch (Settings.SettingNotFoundException e) {
             Logg.d(LOG_TAG, "Screen brightness mode not found");
             return false;

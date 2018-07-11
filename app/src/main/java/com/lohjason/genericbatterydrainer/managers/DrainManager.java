@@ -56,6 +56,10 @@ public class DrainManager {
         drainBehaviorSubject.onNext(setOn);
     }
 
+    public boolean isDraining(){
+        return isDraining.get();
+    }
+
     public void startDraining(boolean useFlash,
                               boolean useScreen,
                               boolean useCpu,
@@ -103,6 +107,10 @@ public class DrainManager {
                              boolean useLocation,
                              boolean useWifi,
                              boolean useBluetooth) {
+        if(!isDraining.get()){
+            Toast.makeText(application, "Not Draining Battery", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (useFlash) {
             flashManager.stopFlashService(application);
         }

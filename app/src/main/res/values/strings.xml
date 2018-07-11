@@ -1,32 +1,64 @@
 <resources>
     <string name="app_name">Generic Battery Drainer</string>
+
+    <!--Main Page-->
+    <string name="about_app_button">About app button</string>
+    <string name="about_app_text"><![CDATA[<h4>Privacy Policy</h4>• No data about you or your device is gathered, stored, collected or saved<br>• We do not display or offer any Ads<br><h4>How to use this App</h4>• Select which components you want to enable and press \"Start\"<br>• A Menu will appear in your notification bar where you can stop the Drain service<br>• You can now minimize or even close this app and use other apps while the draining continues, as long as the Notification menu is still there<br>• If you choose CPU/GPU load, your device will be more sluggish while draining<br>• At any point of time, you can stop draining by either pressing \"Stop\" in either the Main Page or in the Notification Menu<br>• Also, if you previously closed the app after starting the drain, you can open it again by clicking on the Notification Menu<br>• <b>WARNING:</b> Running this app for a prolonged period can cause the battery to heat up. Do not allow your battery to get too hot. You can set a cutoff temperature in the settings menu.<br><h4>Permissions</h4>• Certain permissions are required to run some functions.<br>• If you do not feel comfortable with granting a permission, you can still use the other functions normally<br><h4>Functions</h4>• Flash: Turns on the Torch/LED flash<br>• Screen/Wake Lock: Keeps the screen from turning off and stays at Max Brightness<br>• CPU load: Performs continuous Integer & Floating Point & Double Precision calculations to put load on the CPU<br>• GPU load: Performs Parallel Floating Point multiplication on the GPU. This will also put load on the CPU<br>• GPS: Continuously requests GPS location to drain the battery. The location data is not used or saved.<br>• Wifi: Continuously performs WiFi scans. The scan results are not used or saved.<br>• Bluetooth: Cont inuously performs Bluetooth scans. The scan results are not used or saved.<br><h4>Settings</h4>• For safety reasons, the application will automatically stop upon reaching a certain battery temperature or level limit.<br>• You can choose the value for those limits by clicking the gear icon in the top right of the tool bar.<br>• You can also set your temperature units(C/F) here if you\'re from one of the 5 countries in the entire world that doesn\'t use Celsius<br>]]></string>
+
+    <!--Switch Labels-->
     <string name="flash">Flash</string>
-    <string name="screen">Screen Wake Lock</string>
-    <string name="tax_cpu">CPU Computations</string>
-    <string name="tax_gpu">GPU Computations</string>
+    <string name="screen">Wake Lock &amp; Screen</string>
+    <string name="tax_cpu">CPU Load</string>
+    <string name="tax_gpu">GPU Load</string>
     <string name="poll_gps">GPS</string>
     <string name="poll_wifi">WiFi</string>
     <string name="scan_bluetooth">Bluetooth</string>
-    <string name="start">Start</string>
-    <string name="not_now">Not Now</string>
-    <string name="ok">OK</string>
-    <string name="notification_title">Generic Battery Drainer is running</string>
-    <string name="notification_message1">Press Stop to stop draining</string>
-    <string name="stop">Stop</string>
+
+    <!--Switch Sublabels-->
+    <string name="flash_sublabel">Turns on the LED flash/Torch</string>
+    <string name="screen_sublabel"><![CDATA[Maximise brightness & disable sleep]]></string>
+    <string name="cpu_sublabel">Performs heavy CPU calculations</string>
+    <string name="gpu_sublabel">Does calculations on GPU (May load CPU)</string>
+    <string name="gps_sublabel">Continuously makes GPS requests</string>
+    <string name="wifi_sublabel">Continuously performs Wifi scans</string>
+    <string name="bluetooth_sublabel">Continuously initiates Bluetooth scans</string>
+
+    <!--Permission Titles-->
     <string name="camera_permission_title">Camera</string>
-    <string name="camera_permission_message">The Camera Permission is needed in order to turn on the flashlight.\n- You can still use this app without granting this permission,but you will not be able to turn on the flashlight.</string>
     <string name="write_settings_permission_title">Modify System Settings</string>
-    <string name="write_settings_permission_message">- The Modify Settings Permission is needed in order to modify system brightness.\n- You can still use this app without granting this permission,but you will not be able to change the screen brightness.\n- To grant the permission, click OK and select Generic Battery Drainer, then toggle the permission switch.\n- Would you like to grant this permission?</string>
     <string name="access_fine_location_permission_title">Access Fine Location</string>
-    <string name="access_fine_location_permission_message">- The Access Fine Location Permission is needed in order to make GPS requests.\n- Your location data is not used, collected, saved or shared.\n- It is only invoked to make GPS requests to drain the battery.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making GPS requests.\n- Would you like to grant this permission?</string>
     <string name="wifi_on_title">Turn Wifi On</string>
-    <string name="wifi_on_message">- Wifi needs to be on to perform repeated Wifi scans.\n- Your wifi scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Wifi scans.\n- Would you like to turn Wifi on?</string>
     <string name="bluetooth_on_title">Bluetooth</string>
+
+    <!--Permission Messages-->
+    <string name="camera_permission_message">The Camera Permission is needed in order to turn on the flashlight.\n- You can still use this app without granting this permission,but you will not be able to turn on the flashlight.</string>
+    <string name="write_settings_permission_message">- The Modify Settings Permission is needed in order to modify system brightness.\n- You can still use this app without granting this permission,but you will not be able to change the screen brightness.\n- To grant the permission, click OK and select Generic Battery Drainer, then toggle the permission switch.\n- Would you like to grant this permission?</string>
+    <string name="access_fine_location_permission_message">- The Access Fine Location Permission is needed in order to make GPS requests.\n- Your location data is not used, collected, saved or shared.\n- It is only invoked to make GPS requests to drain the battery.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making GPS requests.\n- Would you like to grant this permission?</string>
+    <string name="wifi_on_message">- Wifi needs to be on to perform repeated Wifi scans.\n- Your wifi scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Wifi scans.\n- Would you like to turn Wifi on?</string>
     <string name="bluetooth_on_message">- Bluetooth needs to be enabled to perform Bluetooth Scans.\n- Your Bluetooth scan results are not used, collected, saved or shared.\n- You can still use this app without granting this permission,but you will not be able to drain the battery via making Bluetooth scans.\n- Would you like to turn Bluetooth on?</string>
-    <string name="updating">Updating</string>
+
+    <!--Battery Info-->
     <string name="voltage_label">Voltage</string>
     <string name="temperature_label">Battery Temp</string>
     <string name="level_label">Battery Level</string>
-    <string name="about_app_button">About app button</string>
+
+    <!--Notification-->
+    <string name="notification_title">Generic Battery Drainer is running</string>
+    <string name="notification_message1">Press Stop to stop draining</string>
+
+    <!--Settings-->
     <string name="cd_settings_button">Settings Button</string>
+    <string name="settings">Settings</string>
+    <string name="temperature_limit">Temperature Limit</string>
+    <string name="stop_at_battery_level">Stop at Battery Level</string>
+    <string name="use_fahrenheit">Use Fahrenheit</string>
+    <string name="close_settings">Close Settings</string>
+
+    <!--General-->
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="not_now">Not Now</string>
+    <string name="ok">OK</string>
+    <string name="updating">Updating</string>
+
 </resources>

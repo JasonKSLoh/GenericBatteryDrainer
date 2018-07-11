@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -32,7 +33,7 @@ import java.util.Locale;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SettingsDialogFragment.SettingsChangedListener {
 
     private static final String LOG_TAG = "+_ManAtv";
     private SwitchCompat      switchFlash;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat      switchBluetooth;
     private TextView          btnStart;
     private ImageView         ivAboutApp;
-    private ImageView ivSettings;
+    private ImageView         ivSettings;
     private Disposable        isDrainingDisposable;
     private TextView          tvBattLevel;
     private TextView          tvVoltage;
@@ -54,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog aboutDialog;
     private AlertDialog openSettingsDialog;
     private AlertDialog permissionRationaleDialog;
+
+    private float lastBatteryTempCelcius = 0f;
+    public float lastBatteryLevel = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,18 +130,20 @@ public class MainActivity extends AppCompatActivity {
         }));
 
         btnStart.setOnClickListener(v -> {
-            if (btnStart.getText().toString().equalsIgnoreCase(getString(R.string.start))) {
-                startDraining();
-            } else {
+            DrainManager drainManager = DrainManager.getInstance(getApplication());
+            if (drainManager.isDraining()) {
                 stopDraining();
+            } else {
+                startDraining();
             }
+
         });
+
 
         ivAboutApp.setOnClickListener(v -> showAboutAppDialog());
 
         ivSettings.setOnClickListener(v -> showSettingsDialogFragment());
     }
-
 
     private void setupSwitchStates() {
         boolean[] switchStates = SharedPrefsUtils.getSwitchStates(this);
@@ -193,9 +199,16 @@ public class MainActivity extends AppCompatActivity {
                 float voltage      = milliVoltage / 1000f;
                 float temp         = (float) tempDeciCelcius / 10f;
                 float batteryLevel = level / (float) scale;
+                lastBatteryTempCelcius = temp;
+                lastBatteryLevel = batteryLevel * 100;
 
-                String tempString = temp + "°C";
-//                String levelString = batteryLevel * 100 + "%";
+                String tempUnit = "°C";
+                if (SharedPrefsUtils.getUsesFahrenheit(getApplicationContext())) {
+                    temp = (float) (temp * 1.8) + 32;
+                    tempUnit = "°F";
+                }
+
+                String tempString    = String.format(Locale.getDefault(), "%.1f%s", temp, tempUnit);
                 String levelString   = String.format(Locale.getDefault(), "%.1f%%", batteryLevel * 100);
                 String voltageString = voltage + "V";
 
@@ -211,8 +224,12 @@ public class MainActivity extends AppCompatActivity {
     private void setStartDrainingButtonState(boolean isNowDraining) {
         if (isNowDraining) {
             btnStart.setText(R.string.stop);
+            btnStart.setBackgroundResource(R.drawable.rounded_shape_red);
+            btnStart.setTextColor(ContextCompat.getColor(this,R.color.material_red_400));
         } else {
             btnStart.setText(R.string.start);
+            btnStart.setBackgroundResource(R.drawable.rounded_shape_green);
+            btnStart.setTextColor(ContextCompat.getColor(this,R.color.material_green_400));
         }
     }
 
@@ -240,13 +257,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showSettingsDialogFragment(){
-        SettingsDialogFragment fragment = new SettingsDialogFragment();
+    private void showSettingsDialogFragment() {
+        SettingsDialogFragment fragment = SettingsDialogFragment.getNewInstance(this);
         fragment.show(getSupportFragmentManager(), "SETTINGS_FRAGMENT");
     }
 
     private void showOpenSettingsDialog() {
-        if(openSettingsDialog != null){
+        if (openSettingsDialog != null) {
             openSettingsDialog.dismiss();
         }
         openSettingsDialog = new AlertDialog.Builder(MainActivity.this)
@@ -262,34 +279,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAboutAppDialog() {
-        String aboutThisAppRaw = "<h4>Privacy Policy</h4>" +
-                                 "• No data about you or your device is gathered, stored, collected or saved<br>" +
-                                 "• We do not display or offer any Ads<br>" +
-                                 "<h4>How to use this App</h4>" +
-                                 "• Select which components you want to enable and press \"Start\"<br>" +
-                                 "• A Menu will appear in your notification bar where you can stop the Drain service<br>" +
-                                 "• You can now minimize or even close this app and use other apps while the draining continues, as long as the Notification menu is still there<br>" +
-                                 "• If you choose CPU/GPU load, your device will be more sluggish while draining<br>" +
-                                 "• At any point of time, you can stop draining by either pressing \"Stop\" in either the Main Page or in the Notification Menu<br>" +
-                                 "• Also, if you previously closed the app after starting the drain, you can open it again by clicking on the Notification Menu<br>" +
-                                 "<h4>Permissions</h4>" +
-                                 "• Certain permissions are required to run some functions.<br>" +
-                                 "• If you do not feel comfortable with granting a permission, you can still use the other functions normally<br>" +
-                                 "<h4>Functions</h4>" +
-                                 "• Flash: Turns on the Torch/LED flash<br>" +
-                                 "• Screen/Wake Lock: Keeps the screen from turning off and stays at Max Brightness<br>" +
-                                 "• CPU load: Performs continuous Integer & Floating Point & Double Precision calculations to put load on the CPU<br>" +
-                                 "• GPU load: Performs Parallel Floating Point multiplication on the GPU. This will also put load on the CPU<br>" +
-                                 "• GPS: Continuously requests GPS location to drain the battery. The location data is not used or saved.<br>" +
-                                 "• Wifi: Continuously performs WiFi scans. The scan results are not used or saved.<br>" +
-                                 "• Bluetooth: Cont inuously performs Bluetooth scans. The scan results are not used or saved.<br>" +
-                                 "<h4>Settings</h4>" +
-                                 "• For safety reasons, the application will automatically stop upon reaching a certain battery temperature or level limit.<br>" +
-                                 "• You can choose the value for those limits by clicking the gear icon in the top right of the tool bar.<br>" +
-                                 "• You can also set your temperature units(C/F) here if you're from one of the 5 countries in the entire world that doesn't use Celsius<br>";
+        String aboutThisAppRaw = getString(R.string.about_app_text);
         Spanned aboutThisApp = Html.fromHtml(aboutThisAppRaw);
 
-        if(aboutDialog != null){
+        if (aboutDialog != null) {
             aboutDialog.dismiss();
         }
         aboutDialog = new AlertDialog.Builder(this)
@@ -299,13 +292,13 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Dismiss", (dialog1, which) -> dialog1.dismiss())
                 .show();
         TextView textView = aboutDialog.findViewById(android.R.id.message);
-        if(textView != null){
+        if (textView != null) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         }
     }
 
     private void showPermissionRationaleDialog(int requestCode) {
-        if(permissionRationaleDialog != null){
+        if (permissionRationaleDialog != null) {
             permissionRationaleDialog.dismiss();
         }
         switch (requestCode) {
@@ -373,14 +366,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveSwitchStates() {
-        SharedPrefsUtils.saveSwitchStates(this,
-                                          switchFlash.isChecked(),
-                                          switchScreen.isChecked(),
-                                          switchCpu.isChecked(),
-                                          switchGpu.isChecked(),
-                                          switchGps.isChecked(),
-                                          switchWifi.isChecked(),
-                                          switchBluetooth.isChecked());
+        SharedPrefsUtils.setSwitchStates(this,
+                                         switchFlash.isChecked(),
+                                         switchScreen.isChecked(),
+                                         switchCpu.isChecked(),
+                                         switchGpu.isChecked(),
+                                         switchGps.isChecked(),
+                                         switchWifi.isChecked(),
+                                         switchBluetooth.isChecked());
     }
 
     @Override
@@ -454,13 +447,13 @@ public class MainActivity extends AppCompatActivity {
         if (batteryLevelReceiver != null) {
             unregisterReceiver(batteryLevelReceiver);
         }
-        if(openSettingsDialog != null && openSettingsDialog.isShowing()){
+        if (openSettingsDialog != null && openSettingsDialog.isShowing()) {
             openSettingsDialog.dismiss();
         }
-        if(aboutDialog != null && aboutDialog.isShowing()){
+        if (aboutDialog != null && aboutDialog.isShowing()) {
             aboutDialog.dismiss();
         }
-        if(permissionRationaleDialog != null && permissionRationaleDialog.isShowing()){
+        if (permissionRationaleDialog != null && permissionRationaleDialog.isShowing()) {
             permissionRationaleDialog.dismiss();
         }
         super.onPause();
@@ -475,4 +468,15 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void appSettingsChanged(boolean usesFahrenheit) {
+        String levelText;
+        if (usesFahrenheit) {
+            double level = (lastBatteryTempCelcius * 1.8) + 32;
+            levelText = String.format(Locale.getDefault(), "%.1f%s", level, "°F");
+        } else {
+            levelText = String.format(Locale.getDefault(), "%.1f%s", lastBatteryTempCelcius, "°C");
+        }
+        tvBattTemp.setText(levelText);
+    }
 }

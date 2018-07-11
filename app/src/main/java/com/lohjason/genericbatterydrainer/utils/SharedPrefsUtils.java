@@ -1,5 +1,6 @@
 package com.lohjason.genericbatterydrainer.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -15,15 +16,17 @@ public class SharedPrefsUtils {
 
     private static final String KEY_SHUTOFF_TEMP = "key_shutoff_temp";
     private static final String KEY_SHUTOFF_LEVEL = "key_shutoff_level";
+    private static final String KEY_USES_FAHRENHEIT = "key_uses_fahrenheit";
+    private static final String KEY_HAS_INITIALIZED = "key_has_initialized";
 
-    public static void saveSwitchStates(Context context,
-                                        boolean useFlash,
-                                        boolean useScreen,
-                                        boolean useCpu,
-                                        boolean useGpu,
-                                        boolean useLocation,
-                                        boolean useWifi,
-                                        boolean useBluetooth ){
+    public static void setSwitchStates(Context context,
+                                       boolean useFlash,
+                                       boolean useScreen,
+                                       boolean useCpu,
+                                       boolean useGpu,
+                                       boolean useLocation,
+                                       boolean useWifi,
+                                       boolean useBluetooth ){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(DrainForegroundService.KEY_FLASH, useFlash);
@@ -49,9 +52,22 @@ public class SharedPrefsUtils {
         return  switchStates;
     }
 
+    public static boolean getHasInitialized(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(KEY_HAS_INITIALIZED, false);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public static void setHasInitialized(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_HAS_INITIALIZED, true);
+        editor.commit();
+    }
+
     public static int getTempLimit(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getInt(KEY_SHUTOFF_TEMP, SettingsDialogFragment.MAX_SAFE_TEMP);
+        return sharedPreferences.getInt(KEY_SHUTOFF_TEMP, (int)SettingsDialogFragment.MAX_SAFE_TEMP);
     }
 
     public static int getLevelLimit(Context context){
@@ -71,5 +87,15 @@ public class SharedPrefsUtils {
         editor.putInt(KEY_SHUTOFF_LEVEL, limit);
         editor.apply();
     }
-
+    public static boolean getUsesFahrenheit(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(KEY_USES_FAHRENHEIT, false);
+    }
+    @SuppressLint("ApplySharedPref")
+    public static void setUsesFahrenheit(Context context, boolean usesFahrenheit){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_USES_FAHRENHEIT, usesFahrenheit);
+        editor.commit();
+    }
 }
