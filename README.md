@@ -4,7 +4,7 @@
 It drains your battery. That's about it.  
   
 How fast depends on the size of your battery and the abilities of your phone's processors.  
-Smaller battery or Faster Processor = Faster Draining  
+Smaller battery or Faster Processor means Faster Draining  
 
 ## Usage
 
