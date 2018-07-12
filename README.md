@@ -1,5 +1,4 @@
 # GenericBatteryDrainer
-Battery Drainer App for Android
 
 ## About this app
 It drains your battery. That's about it.  
