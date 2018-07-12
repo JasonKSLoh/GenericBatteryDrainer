@@ -138,8 +138,6 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                SharedPrefsUtils.setTempLimit(requireContext(),
-                                              convertProgressToTemp(seekBarTemp.getProgress()));
                 settingsViewModel.setBatteryTempProgress(seekBarTemp.getProgress());
             }
         });

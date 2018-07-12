@@ -41,6 +41,8 @@ public class SettingsViewModel extends ViewModel {
             float newTarget = lastBatteryLevel > 1 ? lastBatteryLevel - 1 : 0;
             int closestValue = (int)newTarget;
             batteryLevelProgressLiveData.postValue(closestValue);
+        } else {
+            batteryLevelProgressLiveData.postValue(batteryLevelProgress);
         }
     }
     public void setBatteryTempProgress(int batteryTempProgress){

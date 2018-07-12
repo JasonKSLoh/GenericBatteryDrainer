@@ -19,3 +19,61 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn sun.misc.**
+
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.ConcurrentCircularArrayQueue {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.ConcurrentSequencedCircularArrayQueue {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.MpmcArrayQueueConsumerField {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.MpscLinkedQueue {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.SpmcArrayQueueConsumerField {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.SpscArrayQueue {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.SpscUnboundedArrayQueue {*;}
+
+-keepclassmembers class rx.internal.util.unsafe.UnsafeAccess {*;}
+
+
+## Android architecture components: Lifecycle
+# LifecycleObserver's empty constructor is considered to be unused by proguard
+-keepclassmembers class * implements android.arch.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+# ViewModel's empty constructor is considered to be unused by proguard
+-keepclassmembers class * extends android.arch.lifecycle.ViewModel {
+    <init>(...);
+}
+# keep Lifecycle State and Event enums values
+-keepclassmembers class android.arch.lifecycle.Lifecycle$State { *; }
+-keepclassmembers class android.arch.lifecycle.Lifecycle$Event { *; }
+# keep methods annotated with @OnLifecycleEvent even if they seem to be unused
+# (Mostly for LiveData.LifecycleBoundObserver.onStateChange(), but who knows)
+-keepclassmembers class * {
+    @android.arch.lifecycle.OnLifecycleEvent *;
+}
+
+-keepclassmembers class * implements android.arch.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+
+-keep class * implements android.arch.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+-keep class * implements android.arch.lifecycle.GeneratedAdapter {<init>(...);}
+
+-keepclassmembers class android.arch.** { *; }
+-keep class android.arch.** { *; }
+-dontwarn android.arch.**
+
+# Renderscript
+-keep class android.support.v8.renderscript.** { *; }
+
+# Disable Optimizations
+-dontoptimize
