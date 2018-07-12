@@ -138,5 +138,6 @@ public class DrainManager {
             bluetoothScanManager.setBluetoothScan(application, false);
         }
         setIsDrainingOn(false);
+        Runtime.getRuntime().gc();
     }
 }

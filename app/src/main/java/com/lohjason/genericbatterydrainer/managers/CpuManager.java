@@ -76,7 +76,6 @@ public class CpuManager {
                     newFloat = random.nextFloat() * random.nextFloat() / random.nextFloat() * random.nextFloat();
                     newDouble = Math.pow(Math.sqrt(random.nextDouble()), Math.sqrt(random.nextDouble()));
                 }
-                Runtime.getRuntime().gc();
                 return (newDouble - newFloat) > newInt;
             })
                     .subscribeOn(Schedulers.computation())

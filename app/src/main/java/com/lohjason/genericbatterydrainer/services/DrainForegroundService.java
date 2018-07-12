@@ -41,13 +41,13 @@ public class DrainForegroundService extends Service {
     public static final  int    ID_FG_SERVICE   = 7372;
     public static final  String ID_CHANNEL      = "646464";
 
-    public static final String KEY_FLASH     = "key_flash";
-    public static final String KEY_SCREEN    = "key_screen";
-    public static final String KEY_CPU       = "key_cpu";
-    public static final String KEY_BLUETOOTH = "key_bluetooth";
-    public static final String KEY_GPS       = "key_location";
-    public static final String KEY_GPU       = "key_gpu";
-    public static final String KEY_WIFI      = "key_wifi";
+    public static final String KEY_FLASH                  = "key_flash";
+    public static final String KEY_SCREEN                 = "key_screen";
+    public static final String KEY_CPU                    = "key_cpu";
+    public static final String KEY_BLUETOOTH              = "key_bluetooth";
+    public static final String KEY_GPS                    = "key_location";
+    public static final String KEY_GPU                    = "key_gpu";
+    public static final String KEY_WIFI                   = "key_wifi";
     //endregion
 
     private boolean flashOn     = false;
@@ -109,7 +109,7 @@ public class DrainForegroundService extends Service {
         stopIntent.setAction(ACTION_STOP);
         PendingIntent pendingStopIntent = PendingIntent.getService(this, 0, stopIntent, 0);
 
-        Bitmap icon = BitmapFactory.decodeResource(getApplication().getResources(), R.drawable.ic_battery_alert_2);
+        Bitmap icon        = BitmapFactory.decodeResource(getApplication().getResources(), R.drawable.ic_battery_alert_2);
         Bitmap emptyBitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
         Logg.d(LOG_TAG, "icon null?: " + (icon == null));
         if (icon == null) {
@@ -145,12 +145,24 @@ public class DrainForegroundService extends Service {
         startForeground(ID_FG_SERVICE, notificationBuilder.build());
     }
 
+
+    public void setupBatteryReceiver() {
+        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        batteryLevelReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                handleBatteryIntent(context, intent);
+            }
+        };
+        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+    }
+
     private void updateNotification(float batteryDrainPercent) {
         String levelString;
-        if(batteryDrainPercent >= 0){
-            levelString   = String.format(Locale.getDefault(), "Battery: -%.1f%%", batteryDrainPercent * 100);
-        }  else {
-            levelString   = String.format(Locale.getDefault(), "Battery: +%.1f%%", batteryDrainPercent * (-100));
+        if (batteryDrainPercent >= 0) {
+            levelString = String.format(Locale.getDefault(), "Battery: -%.1f%%", batteryDrainPercent * 100);
+        } else {
+            levelString = String.format(Locale.getDefault(), "Battery: +%.1f%%", batteryDrainPercent * (-100));
         }
         notificationBuilder.setSubText(levelString)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
@@ -160,45 +172,39 @@ public class DrainForegroundService extends Service {
         manager.notify(ID_FG_SERVICE, notificationBuilder.build());
     }
 
-    public void setupBatteryReceiver() {
-        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        batteryLevelReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int level           = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale           = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                float batteryLevel = level / (float) scale;
+    private void handleBatteryIntent(Context context, Intent intent) {
+        int level          = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale          = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        int temperatureRaw = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
 
-                int temperatureRaw = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
-                int temperature = temperatureRaw / 10;
+        float batteryLevel = level / (float) scale;
+        float temperature  = temperatureRaw / 10f;
 
-                int levelLimit = SharedPrefsUtils.getLevelLimit(context);
-                int tempLimit = SharedPrefsUtils.getTempLimit(context);
+        int levelLimit = SharedPrefsUtils.getLevelLimit(context);
+        int tempLimit  = SharedPrefsUtils.getTempLimit(context);
 
-                boolean tempLimitReached = temperature > tempLimit;
-                boolean levelLimitReached = batteryLevel * 100 <= levelLimit;
-                if( tempLimitReached || levelLimitReached){
-                    Intent stopIntent = new Intent(context, DrainForegroundService.class);
-                    stopIntent.setAction(DrainForegroundService.ACTION_STOP);
-                    String stoppedMessage = "Battery Drainer Stopped: Target Battery Level: " + levelLimit + "% Reached.";
-                    if(tempLimitReached){
-                        stoppedMessage = "Battery Drainer Stopped: Temperature limit Reached.";
-                    }
-                    Toast.makeText(context, stoppedMessage, Toast.LENGTH_SHORT).show();
-                    startService(stopIntent);
-                    return;
-                }
-
-                if(originalBatteryLevel == null){
-                    originalBatteryLevel = batteryLevel;
-                    updateNotification(0);
-                } else {
-                    updateNotification(originalBatteryLevel - batteryLevel);
-                }
+        boolean tempLimitReached  = temperature > tempLimit;
+        boolean levelLimitReached = batteryLevel * 100 <= levelLimit;
+        if (tempLimitReached || levelLimitReached) {
+            Intent stopIntent = new Intent(context, DrainForegroundService.class);
+            stopIntent.setAction(DrainForegroundService.ACTION_STOP);
+            String stoppedMessage = "Battery Drainer Stopped: Target Battery Level: " + levelLimit + "% Reached.";
+            if (tempLimitReached) {
+                stoppedMessage = "Battery Drainer Stopped: Temperature limit Reached.";
             }
-        };
-        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+            Toast.makeText(context, stoppedMessage, Toast.LENGTH_SHORT).show();
+            startService(stopIntent);
+            return;
+        }
+
+        if (originalBatteryLevel == null) {
+            originalBatteryLevel = batteryLevel;
+            updateNotification(0);
+        } else {
+            updateNotification(originalBatteryLevel - batteryLevel);
+        }
     }
+
 
     private void startDraining(Intent intent) {
         flashOn = intent.getBooleanExtra(KEY_FLASH, false);

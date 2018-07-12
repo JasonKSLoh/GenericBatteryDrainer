@@ -60,5 +60,10 @@
     <string name="not_now">Not Now</string>
     <string name="ok">OK</string>
     <string name="updating">Updating</string>
+    <string name="open_settings_message">is needed in order to enable the function you selected You can go to the App settings page to turn it on.</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="permissions">Permissions</string>
+    <string name="about_this_app">About this App</string>
+    <string name="dismiss">Dismiss</string>
 
 </resources>

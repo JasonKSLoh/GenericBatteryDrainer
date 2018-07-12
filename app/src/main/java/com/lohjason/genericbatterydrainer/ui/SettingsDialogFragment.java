@@ -1,6 +1,8 @@
 package com.lohjason.genericbatterydrainer.ui;
 
 import android.app.Dialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +31,6 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     public static final  float MAX_SAFE_TEMP       = 50;
     public static final  float CHARGING_TEMP_LIMIT = 45;
     private static final float MIN_TEMP            = 40;
-    private SettingsChangedListener listener;
 
     TextView     tvTempValue;
     TextView     tvLevelValue;
@@ -38,11 +39,11 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     SwitchCompat switchUseFahrenheit;
     TextView     tvCloseSettings;
 
+    private MainViewModel mainViewModel;
+    private SettingsViewModel settingsViewModel;
 
-    public static SettingsDialogFragment getNewInstance(SettingsChangedListener listener) {
-        SettingsDialogFragment fragment = new SettingsDialogFragment();
-        fragment.listener = listener;
-        return fragment;
+    public static SettingsDialogFragment getNewInstance() {
+        return new SettingsDialogFragment();
     }
 
     @Nullable
@@ -50,8 +51,6 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-
         return inflater.inflate(R.layout.fragment_settings_dialog, container, false);
     }
 
@@ -59,6 +58,41 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupViews(view);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel.class);
+        settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+        setupObservers();
+    }
+
+    public void setupObservers(){
+        Observer<Boolean> usesFahrenheitObserver = usesFahrenheit -> {
+            if(usesFahrenheit != null){
+                SharedPrefsUtils.setUsesFahrenheit(requireContext(), usesFahrenheit);
+                updateTempDisplay(seekBarTemp.getProgress());
+                mainViewModel.settingsUpdated(usesFahrenheit);
+            }
+        };
+        settingsViewModel.getUsesFahrenheitLiveData().observe(this, usesFahrenheitObserver);
+
+        Observer<Integer> batteryLevelProgressObserver = progress -> {
+            if(progress != null){
+                seekBarLevel.setProgress(progress);
+                SharedPrefsUtils.setLevelLimit(requireContext(), progress);
+            }
+        };
+        settingsViewModel.getBatteryLevelProgressLiveData().observe(this, batteryLevelProgressObserver);
+
+        Observer<Integer> batteryTempProgressObserver = progress -> {
+            if(progress != null){
+                SharedPrefsUtils.setTempLimit(requireContext(),
+                                              convertProgressToTemp(seekBarTemp.getProgress()));
+            }
+        };
+        settingsViewModel.getBatteryTempProgressLiveData().observe(this, batteryTempProgressObserver);
     }
 
     @NonNull
@@ -95,22 +129,7 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
         seekBarTemp.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int value = convertProgressToTemp(progress);
-                if (value > MAX_SAFE_TEMP) {
-                    tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_red_600));
-                } else if(value > CHARGING_TEMP_LIMIT){
-                    tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_orange_600));
-                } else {
-                    tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_green_600));
-                }
-                String unit = "°C";
-
-                if (SharedPrefsUtils.getUsesFahrenheit(requireContext())) {
-                    value = (int) Math.round(value * 1.8 + 32);
-                    unit = "°F";
-                }
-                String labelValue = value + unit;
-                tvTempValue.setText(labelValue);
+                updateTempDisplay(progress);
             }
 
             @Override
@@ -119,7 +138,9 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                saveSettings();
+                SharedPrefsUtils.setTempLimit(requireContext(),
+                                              convertProgressToTemp(seekBarTemp.getProgress()));
+                settingsViewModel.setBatteryTempProgress(seekBarTemp.getProgress());
             }
         });
 
@@ -137,21 +158,37 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float targetLevel = (float)seekBarLevel.getProgress();
-                float currentLevel = (((MainActivity)requireActivity()).lastBatteryLevel);
-                if(targetLevel >= currentLevel){
-                    float newTarget = currentLevel > 1 ? currentLevel - 1 : 0;
-                    seekBarLevel.setProgress((int)newTarget);
-                }
-                saveSettings();
+                settingsViewModel.setBatteryLevelProgress(seekBar.getProgress(),
+                                                          mainViewModel.getLastBatteryLevel());
             }
         });
+
         switchUseFahrenheit.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            listener.appSettingsChanged(isChecked);
+            settingsViewModel.setUsesFahrenheit(isChecked);
         });
+
         tvCloseSettings.setOnClickListener(v -> dismiss());
 
         initLimits();
+    }
+
+    private void updateTempDisplay(int progress){
+        int value = convertProgressToTemp(progress);
+        if (value > MAX_SAFE_TEMP) {
+            tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_red_600));
+        } else if(value > CHARGING_TEMP_LIMIT){
+            tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_orange_600));
+        } else {
+            tvTempValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.material_green_600));
+        }
+        String unit = "°C";
+
+        if (SharedPrefsUtils.getUsesFahrenheit(requireContext())) {
+            value = (int) Math.round(value * 1.8 + 32);
+            unit = "°F";
+        }
+        String labelValue = value + unit;
+        tvTempValue.setText(labelValue);
     }
 
     private void initLimits() {
@@ -171,13 +208,6 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
         tvTempValue.setText(tempString);
     }
 
-    private void saveSettings() {
-        SharedPrefsUtils.setLevelLimit(requireContext(), seekBarLevel.getProgress());
-        SharedPrefsUtils.setTempLimit(requireContext(), convertProgressToTemp(seekBarTemp.getProgress()));
-        SharedPrefsUtils.setUsesFahrenheit(requireContext(), switchUseFahrenheit.isChecked());
-        listener.appSettingsChanged(switchUseFahrenheit.isChecked());
-    }
-
     private int convertProgressToTemp(int progress) {
         float scale      = 100f / (MAX_AVAILABLE_TEMP - MIN_TEMP);
         float floatValue = (progress / scale) + MIN_TEMP;
@@ -189,7 +219,4 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
         return Math.round((temp - MIN_TEMP) * scale);
     }
 
-    public interface SettingsChangedListener {
-        void appSettingsChanged(boolean usesFahrenheit);
-    }
 }

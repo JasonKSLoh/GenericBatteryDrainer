@@ -53,7 +53,8 @@ public class PermissionUtils {
     public static void requestWriteSettingsPermission(AppCompatActivity appCompatActivity) {
         if (Build.VERSION.SDK_INT >= 23) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-            appCompatActivity.startActivity(intent);
+//            appCompatActivity.startActivity(intent);
+            appCompatActivity.startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
         }
     }
 
