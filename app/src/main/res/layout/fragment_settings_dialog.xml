@@ -127,17 +127,8 @@
             app:layout_constraintTop_toBottomOf="@id/tv_settings_battery_level_off_label"
             />
     </android.support.constraint.ConstraintLayout>
-    <!--<View-->
-    <!--android:background="@android:color/darker_gray"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="1dp"-->
-    <!--app:layout_constraintTop_toBottomOf="@id/seekbar_settings_battery_temp"-->
-    <!--app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--android:layout_marginTop="4dp"-->
-    <!--android:layout_marginLeft="@dimen/margin_label_side"-->
-    <!--android:layout_marginRight="@dimen/margin_label_side"-->
-    <!--/>-->
+
+
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/settings_container_use_fahrenheit"
@@ -158,7 +149,7 @@
             android:layout_marginLeft="@dimen/margin_label_side"
             android:layout_marginTop="@dimen/margin_label_top"
             android:text="@string/use_fahrenheit"
-            android:textSize="@dimen/switch_title_text_size"
+            android:textSize="@dimen/switch_subtitle_text_size"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -175,7 +166,41 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/settings_container_reset_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_card"
+        android:background="@drawable/card_background"
+        android:elevation="@dimen/elevation_card_settings"
+        android:paddingBottom="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_container_use_fahrenheit"
+        >
+        <TextView
+            android:id="@+id/tv_reset_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_label_side"
+            android:layout_marginTop="@dimen/margin_label_top"
+            android:text="Reset Battery level cutoff on Restart"
+            android:textSize="@dimen/switch_subtitle_text_size"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switch_reset_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/margin_label_side"
+            app:layout_constraintBottom_toBottomOf="@id/tv_reset_level"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_reset_level"
+            />
+
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_close_settings"
@@ -199,6 +224,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_container_use_fahrenheit"
+        app:layout_constraintTop_toBottomOf="@id/settings_container_reset_level"
         />
 </android.support.constraint.ConstraintLayout>

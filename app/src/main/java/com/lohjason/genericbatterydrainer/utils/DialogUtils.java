@@ -4,6 +4,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -16,7 +17,6 @@ import com.lohjason.genericbatterydrainer.managers.WifiScanManager;
  * Created by jason on 12/7/18.
  */
 public class DialogUtils {
-
 
     public static AlertDialog getOpenSettingsDialog(AppCompatActivity activity, int requestCode) {
         String permission = "";
@@ -58,6 +58,7 @@ public class DialogUtils {
         TextView textView = aboutDialog.findViewById(android.R.id.message);
         if (textView != null) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            Linkify.addLinks(textView, Linkify.ALL);
         }
         return aboutDialog;
     }
@@ -139,6 +140,12 @@ public class DialogUtils {
             default:
                 permissionRationaleDialog = null;
                 break;
+        }
+        if(permissionRationaleDialog != null){
+            TextView textView = permissionRationaleDialog.findViewById(android.R.id.message);
+            if (textView != null) {
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            }
         }
         return permissionRationaleDialog;
     }

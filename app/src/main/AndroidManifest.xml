@@ -12,8 +12,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
 
 
     <uses-feature android:name="android.hardware.camera2"
@@ -46,9 +44,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http"/>
                 <data android:scheme="https"/>
-                <data android:host="www.lohjason.com"/>
-                <data android:host="lohjason.com"/>
-                <data android:pathPrefix="/genericbatterydrainer/get" />
+                <data android:host="genericdrainer.lohjason.com"/>
+                <data android:pathPrefix="/get" />
             </intent-filter>
 
         </activity>

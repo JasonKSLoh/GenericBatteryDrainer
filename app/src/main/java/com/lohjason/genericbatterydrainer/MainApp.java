@@ -19,15 +19,23 @@ public class MainApp extends Application {
         RxJavaPlugins.setErrorHandler(e -> {
             Logg.e("RxJavaError", e.getMessage(), e);
         });
+        applySettings();
+    }
+
+    private void applySettings(){
         if(!SharedPrefsUtils.getHasInitialized(this)){
             initializeSettings();
+        }
+        if (SharedPrefsUtils.getResetLevelOnRestart(this)){
+            SharedPrefsUtils.setLevelLimit(this, 0);
         }
     }
 
     private void initializeSettings(){
-        SharedPrefsUtils.setUsesFahrenheit(this, false);
         SharedPrefsUtils.setTempLimit(this, 50);
         SharedPrefsUtils.setLevelLimit(this, 0);
+        SharedPrefsUtils.setUsesFahrenheit(this, false);
+        SharedPrefsUtils.setResetLevelOnRestart(this, false);
         SharedPrefsUtils.setSwitchStates(this,
                                          false,
                                          false,

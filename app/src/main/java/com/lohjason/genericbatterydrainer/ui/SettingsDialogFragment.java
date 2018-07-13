@@ -37,6 +37,7 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     SeekBar      seekBarTemp;
     SeekBar      seekBarLevel;
     SwitchCompat switchUseFahrenheit;
+    SwitchCompat switchResetLevel;
     TextView     tvCloseSettings;
 
     private MainViewModel mainViewModel;
@@ -120,10 +121,14 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
         seekBarTemp = view.findViewById(R.id.seekbar_settings_battery_temp);
         seekBarLevel = view.findViewById(R.id.seekbar_settings_battery_level);
         switchUseFahrenheit = view.findViewById(R.id.switch_use_fahrenheit);
+        switchResetLevel = view.findViewById(R.id.switch_reset_level);
         tvCloseSettings = view.findViewById(R.id.tv_close_settings);
 
         if (SharedPrefsUtils.getUsesFahrenheit(requireContext())) {
             switchUseFahrenheit.setChecked(true);
+        }
+        if (SharedPrefsUtils.getResetLevelOnRestart(requireContext())){
+            switchResetLevel.setChecked(true);
         }
 
         seekBarTemp.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -163,6 +168,10 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
 
         switchUseFahrenheit.setOnCheckedChangeListener((buttonView, isChecked) -> {
             settingsViewModel.setUsesFahrenheit(isChecked);
+        });
+
+        switchResetLevel.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPrefsUtils.setResetLevelOnRestart(requireContext(), isChecked);
         });
 
         tvCloseSettings.setOnClickListener(v -> dismiss());

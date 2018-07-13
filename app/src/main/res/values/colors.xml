@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">@color/material_indigo_400</color>
     <color name="colorPrimaryDark">@color/material_indigo_800</color>
     <color name="colorAccent">@color/material_orange_400</color>
@@ -285,16 +285,16 @@
     <color name="material_brown_900">#3E2723</color>
 
     <!--grey-->
-    <color name="material_grey_50">#FAFAFA</color>
-    <color name="material_grey_100">#F5F5F5</color>
+    <color name="material_grey_50" tools:override="true">#FAFAFA</color>
+    <color name="material_grey_100" tools:override="true">#F5F5F5</color>
     <color name="material_grey_200">#EEEEEE</color>
-    <color name="material_grey_300">#E0E0E0</color>
+    <color name="material_grey_300" tools:override="true">#E0E0E0</color>
     <color name="material_grey_400">#BDBDBD</color>
     <color name="material_grey_500">#9E9E9E</color>
-    <color name="material_grey_600">#757575</color>
+    <color name="material_grey_600" tools:override="true">#757575</color>
     <color name="material_grey_700">#616161</color>
-    <color name="material_grey_800">#424242</color>
-    <color name="material_grey_900">#212121</color>
+    <color name="material_grey_800" tools:override="true">#424242</color>
+    <color name="material_grey_900" tools:override="true">#212121</color>
     <color name="material_black_1000">#000000</color>
     <color name="material_white_1000">#ffffff</color>
 
@@ -307,8 +307,8 @@
     <color name="material_blue_grey_500">#607D8B</color>
     <color name="material_blue_grey_600">#546E7A</color>
     <color name="material_blue_grey_700">#455A64</color>
-    <color name="material_blue_grey_800">#37474F</color>
-    <color name="material_blue_grey_900">#263238</color>
+    <color name="material_blue_grey_800" tools:override="true">#37474F</color>
+    <color name="material_blue_grey_900" tools:override="true">#263238</color>
 
 
     <!--SOCIAL COLORS-->
