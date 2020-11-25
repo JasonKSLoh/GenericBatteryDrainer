@@ -30,7 +30,7 @@ public class SettingsDialogFragment extends BottomSheetDialogFragment {
     public static final  float MAX_AVAILABLE_TEMP  = 55;
     public static final  float MAX_SAFE_TEMP       = 50;
     public static final  float CHARGING_TEMP_LIMIT = 45;
-    private static final float MIN_TEMP            = 40;
+    private static final float MIN_TEMP            = 0;
 
     TextView     tvTempValue;
     TextView     tvLevelValue;
